@@ -20,22 +20,18 @@ client.load_host_keys('/home/melissali/.ssh/known_hosts')
 client.load_system_host_keys()
 
 try:
-    client.connect('192.168.2.249', username='melissali', key_filename='/home/melissali/.ssh/id_rsa')
-except paramiko.ssh_exception.AuthenticationException as e:
+    client.connect('192.168.2.249', username='melissali', password='wrongpassword', look_for_keys=False)
+except paramiko.ssh_exception.AuthenticationException:
     client.close()
-    print(e)
-except OSError as e:
+    paramiko_logger.removeHandler(ch)
+    # StringIO.getvalue() retrieves entire content of file
+    log_content = log_string.getvalue()
+    log_string.flush()
+    print(log_content)
+    raise
+except OSError:
     client.close()
-    print(e)
+    paramiko_logger.removeHandler(ch)
+    log_string.flush()
+    raise
 
-# remove handler from logger to stop future log records from being sent to it
-paramiko_logger.removeHandler(ch)
-
-# StringIO.getvalue() retrieves entire content of file
-log_content = log_string.getvalue()
-
-log_string.flush()
-# log_string.close()
-
-print(log_content)
-# print(log_string.closed)

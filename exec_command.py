@@ -20,14 +20,15 @@ def execute_command(conn, cmd, stdin=""):
         _stdin.write(stdin)
         _stdin.flush()
         _stdin.channel.shutdown_write()
-    out = ''
+    out = []
     for line in _stdout:
-        out += line
-    # print(type(out))
+        out.append(line)
+    out = ''.join(out)
     print(out)
-    err = ''
+    err = []
     for line in _stderr:
-        err += line
+        err.append(line)
+    err = ''.join(err)
     # print(err)
     code = _stdout.channel.recv_exit_status()
     print(code)

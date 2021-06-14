@@ -10,11 +10,11 @@ def connection(addr):
 
 def run():
     with connection('192.168.2.249') as conn:
-        cmd = 'python3'
-        stdin = "print('hello')"
-        execute_command(conn, cmd, stdin)
+        file_transfer(conn)
+        cmd = 'cd /tmp; python3 remotes.py'
+        execute_command(conn, cmd)
 
-def execute_command(conn, cmd, stdin = ""):
+def execute_command(conn, cmd, stdin=""):
     _stdin, _stdout, _stderr = conn.exec_command(cmd)
     if stdin:
         _stdin.write(stdin)
@@ -28,8 +28,12 @@ def execute_command(conn, cmd, stdin = ""):
     err = ''
     for line in _stderr:
         err += line
-    print(err)
+    # print(err)
     code = _stdout.channel.recv_exit_status()
     print(code)
+
+def file_transfer(conn):
+    sftp_client = conn.open_sftp()
+    sftp_client.put('/home/melissali/Downloads/remotes.py', '/tmp/remotes.py')
 
 run()
